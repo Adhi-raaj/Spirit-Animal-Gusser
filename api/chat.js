@@ -6,7 +6,7 @@
 // 5. Add GEMINI_API_KEY = your key
 // 6. Redeploy — done!
 
-const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
 function parseBody(req) {
   if (!req.body) {
