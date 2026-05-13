@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover Your Spirit Animal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap');
+
+    :root {
+      --forest-950: #0d1a0d;
+      --forest-900: #102110;
+      --forest-800: #1a2a1a;
+      --forest-700: #243a24;
+      --gold: #e8d5a3;
+      --sage: #8fd48f;
+      --amber: #f0a94b;
+      --mist: rgba(232, 213, 163, 0.72);
+      --glass: rgba(13, 26, 13, 0.62);
+      --glass-strong: rgba(26, 42, 26, 0.86);
+      --line: rgba(143, 212, 143, 0.22);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--gold);
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(143, 212, 143, 0.18), transparent 22rem),
+        radial-gradient(circle at 18% 78%, rgba(232, 213, 163, 0.12), transparent 18rem),
+        radial-gradient(circle at 82% 86%, rgba(45, 95, 45, 0.24), transparent 20rem),
+        linear-gradient(150deg, #071007 0%, var(--forest-950) 46%, #091109 100%);
+      overflow-x: hidden;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      left: var(--left);
+      top: var(--top);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 0 10px rgba(232, 213, 163, 0.65);
+      animation: twinkle var(--duration) ease-in-out infinite;
+      animation-delay: var(--delay);
+      opacity: 0.2;
+    }
+
+    @keyframes twinkle {
+      0%,
+      100% {
+        opacity: 0.18;
+        transform: scale(0.78);
+      }
+      50% {
+        opacity: 0.95;
+        transform: scale(1.18);
+      }
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 28px 18px;
+    }
+
+    .screen {
+      display: none;
+      width: min(100%, 480px);
+      text-align: center;
+    }
+
+    .screen.active {
+      display: block;
+      animation: screenIn 360ms ease both;
+    }
+
+    @keyframes screenIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .panel {
+      width: 100%;
+      padding: 34px 26px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(16, 33, 16, 0.9), rgba(13, 26, 13, 0.78));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .leaf {
+      margin-bottom: 12px;
+      font-size: 48px;
+      line-height: 1;
+      filter: drop-shadow(0 0 18px rgba(143, 212, 143, 0.5));
+    }
+
+    .eyebrow,
+    .question-kicker,
+    .badge {
+      color: var(--sage);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      margin: 12px 0 16px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-weight: 700;
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 12vw, 4rem);
+    }
+
+    h2 {
+      font-size: clamp(1.7rem, 7vw, 2.35rem);
+    }
+
+    p {
+      margin: 0;
+      color: var(--mist);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .intro-copy {
+      max-width: 34ch;
+      margin: 0 auto 28px;
+    }
+
+    .primary-btn {
+      min-height: 52px;
+      width: 100%;
+      max-width: 280px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff8e2;
+      cursor: pointer;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2f6b35, #143b1a 55%, #0d2911);
+      box-shadow: 0 10px 28px rgba(143, 212, 143, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+    }
+
+    .primary-btn:hover,
+    .primary-btn:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 0 22px rgba(143, 212, 143, 0.36), 0 16px 36px rgba(0, 0, 0, 0.25);
+      filter: brightness(1.08);
+      outline: none;
+    }
+
+    .quiz-panel {
+      text-align: left;
+    }
+
+    .progress-wrap {
+      margin-bottom: 26px;
+    }
+
+    .progress-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--mist);
+      font-size: 0.9rem;
+    }
+
+    .progress-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(232, 213, 163, 0.14);
+    }
+
+    .progress-bar {
+      width: 10%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--sage), #e8d5a3);
+      box-shadow: 0 0 16px rgba(143, 212, 143, 0.5);
+      transition: width 360ms ease;
+    }
+
+    .question-kicker {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      min-height: 116px;
+      margin: 0 0 22px;
+      color: var(--gold);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(1.55rem, 6vw, 2.15rem);
+      font-weight: 600;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      min-height: 58px;
+      width: 100%;
+      padding: 15px 18px;
+      border: 1px solid rgba(143, 212, 143, 0.18);
+      border-radius: 8px;
+      color: #f4e8bf;
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.35;
+      background: linear-gradient(135deg, rgba(26, 42, 26, 0.72), rgba(13, 26, 13, 0.55));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(14px);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .answer-btn:hover,
+    .answer-btn:focus-visible {
+      transform: translateX(4px);
+      border-color: rgba(143, 212, 143, 0.62);
+      background: linear-gradient(135deg, rgba(34, 69, 35, 0.86), rgba(18, 45, 21, 0.72));
+      outline: none;
+    }
+
+    .answer-btn.selected {
+      transform: translateX(4px);
+      border-color: rgba(232, 213, 163, 0.86);
+      color: #fff8df;
+      background: linear-gradient(135deg, rgba(73, 119, 55, 0.95), rgba(26, 69, 30, 0.9));
+      box-shadow: 0 0 22px rgba(143, 212, 143, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    }
+
+    .answer-btn:disabled {
+      cursor: default;
+    }
+
+    .loading-panel {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+    }
+
+    .spinner {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 26px;
+      border: 3px solid rgba(232, 213, 163, 0.16);
+      border-top-color: var(--sage);
+      border-right-color: rgba(232, 213, 163, 0.72);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 26px rgba(143, 212, 143, 0.12);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-title {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .loading-message {
+      min-height: 28px;
+      color: var(--sage);
+    }
+
+    .result-panel {
+      padding-top: 28px;
+    }
+
+    .animal-emoji {
+      margin: 14px 0 6px;
+      font-size: clamp(4.7rem, 20vw, 6.4rem);
+      line-height: 1;
+      animation: floatAnimal 3s ease-in-out infinite;
+      filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.34));
+    }
+
+    @keyframes floatAnimal {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .animal-name {
+      margin: 4px 0 8px;
+      color: var(--gold);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(2rem, 9vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .tagline {
+      margin: 0 auto;
+      color: var(--sage);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 1.12rem;
+      font-style: italic;
+      line-height: 1.45;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      margin: 24px 0;
+      border: 0;
+      background: linear-gradient(90deg, transparent, rgba(232, 213, 163, 0.52), transparent);
+    }
+
+    .description {
+      margin-bottom: 28px;
+      color: rgba(232, 213, 163, 0.86);
+    }
+
+    .error-message {
+      display: none;
+      margin: 0 0 24px;
+      padding: 14px 16px;
+      border: 1px solid rgba(240, 169, 75, 0.42);
+      border-radius: 8px;
+      color: #ffc271;
+      background: rgba(94, 54, 14, 0.22);
+      line-height: 1.45;
+    }
+
+    .error-message.active {
+      display: block;
+    }
+
+    @media (max-width: 420px) {
+      .app-shell {
+        padding: 18px 14px;
+      }
+
+      .panel {
+        padding: 28px 20px;
+      }
+
+      .question-text {
+        min-height: 134px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars" aria-hidden="true"></div>
+
+  <main class="app-shell">
+    <section class="screen active" id="intro-screen">
+      <div class="panel">
+        <div class="leaf" aria-hidden="true">🍃</div>
+        <div class="eyebrow">Ancient Wisdom · Spirit Quest</div>
+        <h1>Discover Your Spirit Animal</h1>
+        <p class="intro-copy">Answer ten soul-stirring questions and let the old forest reveal the creature walking beside your inner self.</p>
+        <button class="primary-btn" id="begin-btn" type="button">Begin the Journey</button>
+      </div>
+    </section>
+
+    <section class="screen" id="quiz-screen">
+      <div class="panel quiz-panel">
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="progress-label">Question 1 of 10</span>
+            <span id="progress-percent">10%</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+        </div>
+        <span class="question-kicker" id="question-number">Question 1</span>
+        <h2 class="question-text" id="question-text"></h2>
+        <div class="answers" id="answers"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="loading-screen">
+      <div class="panel loading-panel">
+        <div>
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="loading-title">The spirits are speaking...</p>
+          <p class="loading-message" id="loading-message">Consulting the ancient spirits...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="result-screen">
+      <div class="panel result-panel">
+        <div class="badge">Your Spirit Animal</div>
+        <div class="animal-emoji" id="animal-emoji" aria-hidden="true">✨</div>
+        <div class="animal-name" id="animal-name">Awaiting the omen</div>
+        <p class="tagline" id="tagline">"The path is still unfolding."</p>
+        <hr class="divider">
+        <p class="description" id="description"></p>
+        <p class="error-message" id="error-message">The spirits are resting. Please try again.</p>
+        <button class="primary-btn" id="restart-btn" type="button">Take the Journey Again</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        text: "When faced with a difficult decision, you usually…",
+        answers: [
+          "Trust your gut instinct immediately",
+          "Carefully analyse all the information",
+          "Ask close friends or family for advice",
+          "Step back and wait for clarity"
+        ]
+      },
+      {
+        text: "Your perfect Saturday looks like…",
+        answers: [
+          "Exploring somewhere new and unknown",
+          "A quiet day at home with a good book",
+          "A lively gathering with people you love",
+          "Working on a meaningful creative project"
+        ]
+      },
+      {
+        text: "When someone wrongs you, your first impulse is to…",
+        answers: [
+          "Confront them honestly and directly",
+          "Retreat and process it alone",
+          "Forgive and let it go quickly",
+          "Plan a thoughtful, measured response"
+        ]
+      },
+      {
+        text: "Which landscape speaks to your soul?",
+        answers: [
+          "Vast open skies and mountain peaks",
+          "Dense, ancient forests",
+          "Endless wild ocean",
+          "Golden, open plains"
+        ]
+      },
+      {
+        text: "You feel most alive when…",
+        answers: [
+          "You're leading others toward a goal",
+          "You're creating something from nothing",
+          "You're deeply connected to someone",
+          "You're discovering something unknown"
+        ]
+      },
+      {
+        text: "Your greatest strength is your…",
+        answers: [
+          "Fierce courage and boldness",
+          "Sharp intelligence and strategy",
+          "Warmth, loyalty, and compassion",
+          "Patience and quiet resilience"
+        ]
+      },
+      {
+        text: "In a group, you naturally become…",
+        answers: [
+          "The one who takes charge",
+          "The one with the clever plan",
+          "The heart who holds everyone together",
+          "The observer who sees the full picture"
+        ]
+      },
+      {
+        text: "Your relationship with solitude is…",
+        answers: [
+          "You crave it — it's where you recharge",
+          "You enjoy it occasionally but need people",
+          "You avoid it — connection is everything",
+          "You use it to create and reflect"
+        ]
+      },
+      {
+        text: "When you love something, you…",
+        answers: [
+          "Protect it with fierce devotion",
+          "Study and understand it deeply",
+          "Share it generously with everyone",
+          "Admire it quietly from a distance"
+        ]
+      },
+      {
+        text: "The legacy you want to leave behind is…",
+        answers: [
+          "Inspiring others to be brave",
+          "Advancing knowledge and wisdom",
+          "Making people feel loved and seen",
+          "Proving that quiet strength endures"
+        ]
+      }
+    ];
+
+    const loadingMessages = [
+      "Consulting the ancient spirits...",
+      "Reading the winds of your soul...",
+      "Walking between worlds...",
+      "The forest is listening..."
+    ];
+
+    const screens = {
+      intro: document.getElementById("intro-screen"),
+      quiz: document.getElementById("quiz-screen"),
+      loading: document.getElementById("loading-screen"),
+      result: document.getElementById("result-screen")
+    };
+
+    const starsEl = document.getElementById("stars");
+    const beginBtn = document.getElementById("begin-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const questionText = document.getElementById("question-text");
+    const questionNumber = document.getElementById("question-number");
+    const answersEl = document.getElementById("answers");
+    const progressLabel = document.getElementById("progress-label");
+    const progressPercent = document.getElementById("progress-percent");
+    const progressBar = document.getElementById("progress-bar");
+    const loadingMessage = document.getElementById("loading-message");
+    const animalEmoji = document.getElementById("animal-emoji");
+    const animalName = document.getElementById("animal-name");
+    const tagline = document.getElementById("tagline");
+    const description = document.getElementById("description");
+    const errorMessage = document.getElementById("error-message");
+
+    let currentQuestion = 0;
+    let selections = [];
+    let loadingTimer = null;
+
+    function createStars() {
+      const totalStars = 82;
+
+      for (let index = 0; index < totalStars; index += 1) {
+        const star = document.createElement("span");
+        const size = Math.random() * 2 + 1;
+
+        star.className = "star";
+        star.style.setProperty("--size", `${size}px`);
+        star.style.setProperty("--left", `${Math.random() * 100}%`);
+        star.style.setProperty("--top", `${Math.random() * 100}%`);
+        star.style.setProperty("--duration", `${Math.random() * 3 + 2}s`);
+        star.style.setProperty("--delay", `${Math.random() * -5}s`);
+        starsEl.appendChild(star);
+      }
+    }
+
+    function showScreen(screenName) {
+      Object.values(screens).forEach((screen) => {
+        screen.classList.remove("active");
+      });
+      screens[screenName].classList.add("active");
+    }
+
+    function startQuiz() {
+      currentQuestion = 0;
+      selections = [];
+      clearLoadingTimer();
+      renderQuestion();
+      showScreen("quiz");
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestion];
+      const visibleNumber = currentQuestion + 1;
+      const percent = Math.round((visibleNumber / questions.length) * 100);
+
+      questionNumber.textContent = `Question ${visibleNumber}`;
+      questionText.textContent = question.text;
+      progressLabel.textContent = `Question ${visibleNumber} of ${questions.length}`;
+      progressPercent.textContent = `${percent}%`;
+      progressBar.style.width = `${percent}%`;
+      answersEl.innerHTML = "";
+
+      question.answers.forEach((answer) => {
+        const button = document.createElement("button");
+        button.className = "answer-btn";
+        button.type = "button";
+        button.textContent = answer;
+        button.addEventListener("click", () => selectAnswer(button, answer));
+        answersEl.appendChild(button);
+      });
+    }
+
+    function selectAnswer(button, answer) {
+      const buttons = answersEl.querySelectorAll(".answer-btn");
+      buttons.forEach((item) => {
+        item.disabled = true;
+      });
+      button.classList.add("selected");
+      selections.push({
+        question: questions[currentQuestion].text,
+        answer
+      });
+
+      window.setTimeout(() => {
+        currentQuestion += 1;
+
+        if (currentQuestion < questions.length) {
+          renderQuestion();
+        } else {
+          revealSpiritAnimal();
+        }
+      }, 400);
+    }
+
+    function startLoadingMessages() {
+      let messageIndex = 0;
+      loadingMessage.textContent = loadingMessages[messageIndex];
+      clearLoadingTimer();
+
+      loadingTimer = window.setInterval(() => {
+        messageIndex = (messageIndex + 1) % loadingMessages.length;
+        loadingMessage.textContent = loadingMessages[messageIndex];
+      }, 1800);
+    }
+
+    function clearLoadingTimer() {
+      if (loadingTimer) {
+        window.clearInterval(loadingTimer);
+        loadingTimer = null;
+      }
+    }
+
+    function buildPrompt() {
+      const answerLines = selections.map((selection, index) => {
+        return `Q${index + 1}: ${selection.question}\nAnswer: ${selection.answer}`;
+      }).join("\n\n");
+
+      return `You are an ancient spirit animal oracle. Based on these 10 quiz answers, reveal the person's spirit animal.
+
+${answerLines}
+
+Respond ONLY with a valid JSON object. No markdown, no code blocks, just raw JSON:
+{
+  "animal": "Animal Name",
+  "emoji": "single emoji for the animal",
+  "tagline": "A poetic one-liner under 12 words in quotes capturing their essence",
+  "description": "2-3 sentences max 80 words. Be poetic, specific, and insightful. Reference the animal's qualities and connect them to the person's answers."
+}`;
+    }
+
+    function stripMarkdownFences(text) {
+      return text
+        .trim()
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+    }
+
+    async function revealSpiritAnimal() {
+      showScreen("loading");
+      startLoadingMessages();
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ prompt: buildPrompt() })
+        });
+
+        if (!response.ok) {
+          throw new Error("Gemini request failed");
+        }
+
+        const data = await response.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!text) {
+          throw new Error("Gemini returned no text");
+        }
+
+        const parsed = JSON.parse(stripMarkdownFences(text));
+        showResult(parsed);
+      } catch (error) {
+        showErrorResult();
+      } finally {
+        clearLoadingTimer();
+      }
+    }
+
+    function showResult(result) {
+      animalEmoji.textContent = result.emoji || "✨";
+      animalName.textContent = result.animal || "Unknown Guide";
+      tagline.textContent = formatTagline(result.tagline);
+      description.textContent = result.description || "";
+      errorMessage.classList.remove("active");
+      showScreen("result");
+    }
+
+    function formatTagline(value) {
+      const fallback = "A quiet mystery walks beside you.";
+      const line = (value || fallback).trim();
+
+      if ((line.startsWith("\"") && line.endsWith("\"")) || (line.startsWith("“") && line.endsWith("”"))) {
+        return line;
+      }
+
+      return `"${line}"`;
+    }
+
+    function showErrorResult() {
+      animalEmoji.textContent = "🌙";
+      animalName.textContent = "The Vision Fades";
+      tagline.textContent = "\"Even stillness has wisdom.\"";
+      description.textContent = "";
+      errorMessage.classList.add("active");
+      showScreen("result");
+    }
+
+    beginBtn.addEventListener("click", startQuiz);
+    restartBtn.addEventListener("click", startQuiz);
+
+    createStars();
+  </script>
+</body>
+</html>
